@@ -8,7 +8,9 @@
             "email": "jakub@underdev.it"
         }
     ],
-    "require": {},
+    "require": {
+        "php": ">=5.3.9",
+    },
     "autoload": {
         "psr-4" : {
             "underDEV\\Utils\\" : "src"

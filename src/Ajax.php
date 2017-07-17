@@ -4,7 +4,7 @@
  * Handles AJAX calls
  */
 
-namespace underDEV\Utils\Utils;
+namespace underDEV\Utils;
 
 class Ajax {
 

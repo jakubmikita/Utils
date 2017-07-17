@@ -1,6 +1,6 @@
 [![Latest Stable Version](https://poser.pugx.org/underdev/utils/v/stable)](https://packagist.org/packages/underdev/utils) [![Total Downloads](https://poser.pugx.org/underdev/utils/downloads)](https://packagist.org/packages/underdev/utils) [![Latest Unstable Version](https://poser.pugx.org/underdev/utils/v/unstable)](https://packagist.org/packages/underdev/utils)
 
-WordPress utilities classes
+WordPress utilities classes for plugin development
 
 # Usage example
 
@@ -22,6 +22,8 @@ Example::get();
 
 ## AJAX
 
+Helper for AJAX requests.
+
 ```php
 use underDEV\Utils\Ajax;
 
@@ -42,3 +44,24 @@ function ajax_callback() {
 
 }
 ```
+
+## Files
+
+Helper for plugin's files.
+
+```php
+use underDEV\Utils\Files;
+
+// argument should be the main plugin file
+$files = new Files( __FILE__ );
+
+// get asset url
+// will return: your-plugin/assets/dist/css/style.css
+$files->asset_url( 'css', 'style.css' )
+
+// get vendor asset url
+// will return: your-plugin/assets/vendor/vendor_name/asset.css
+$files->vendor_asset_url( 'vendor_name', 'asset.css' )
+```
+
+For all methods please check the class source.

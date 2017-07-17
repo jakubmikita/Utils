@@ -65,3 +65,31 @@ $files->vendor_asset_url( 'vendor_name', 'asset.css' )
 ```
 
 For all methods please check the class source.
+
+## View
+
+Helper for loading views. Uses the Files class.
+
+```php
+use underDEV\Utils\Files;
+use underDEV\Utils\View;
+
+// argument should be the main plugin file
+$files = new Files( __FILE__ );
+$view  = new View( $files );
+
+// set some view var
+$view->set_var( 'var_name', 'value' );
+
+// load view
+// this will load ./views/parts/menu.php
+$view->get_view( 'parts/menu' );
+```
+
+In template file you can get vars
+
+```html
+<div><?php echo $this->get_var( 'var_name' ); ?></div>
+```
+
+To have different scopes in templates you have to instantinate different classes.

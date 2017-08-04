@@ -93,3 +93,44 @@ In template file you can get vars
 ```
 
 To have different scopes in templates you have to instantinate different classes.
+
+## Cache
+
+Interface for cache. Has two implementations:
+* Object Cache - if WordPress cache is not set it will not persist
+* Transient Cache
+
+```php
+use underDEV\Utils\Cache;
+use underDEV\Utils\Interfaces\Cacheable;
+
+// define class which utilises cache
+class MyClass {
+
+	public function __construct( Cacheable $foo, Cacheable $bar ) {
+		$this->foo = $foo;
+		$this->bar = $bar;
+	}
+
+	public function get_foo() {
+		return $this->foo->get();
+	}
+
+	public function get_bar() {
+		return $this->bar->get();
+	}
+
+}
+
+// create new cache object giving it a key and group
+$cached_object = new Cache\Object( 'object_key', 'object_group' );
+
+// create new transient cache giving it a key and expiration in seconds
+$transient_cache = new Cache\Transient( 'transient_key', 3600 );
+
+$my_class = new MyClass( $cached_object, $transient_cache );
+echo $my_class->get_foo();
+echo $my_class->get_bar();
+```
+
+See Cacheable interface for all available methods.

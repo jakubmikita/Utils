@@ -93,3 +93,70 @@ In template file you can get vars
 ```
 
 To have different scopes in templates you have to instantinate different classes.
+
+## Cache
+
+Interface for cache. Has two implementations:
+* Object Cache - if WordPress cache is not set it will not persist
+* Transient Cache
+
+### Basic usage
+
+```php
+use underDEV\Utils\Cache\Object;
+use underDEV\Utils\Cache\Transient;
+
+// create new cache object giving it a key and group
+$cached_object = new Object( 'object_key', 'object_group' );
+var_dump( $cached_object->get() ); // inspect cached value
+
+// create new transient cache giving it a key and expiration in seconds
+$transient_cache = new Transient( 'transient_key', 3600 );
+var_dump( $transient_cache->get() ); // inspect cached value
+```
+
+### Injecting cached element into a class
+
+```php
+use underDEV\Utils\Interfaces\Cacheable;
+use underDEV\Utils\Cache\Object;
+use underDEV\Utils\Cache\Transient;
+
+class MyClass {
+
+	/**
+	 * Cached object
+	 * @var mixed
+	 */
+	protected $cached_element;
+
+	/**
+	 * Constructor
+	 * @param Cacheable $cached_element
+	 */
+	public function __construct( Cacheable $cached_element ) {
+		$this->cached_element = $cached_element;
+	}
+
+	public function inspect_element() {
+		var_dump( $this->cached_element->get() );
+	}
+
+}
+
+$myclass = new MyClass( new Object( 'object_key', 'object_group' ) );
+$myclass->inspect_element(); // dumps object cached variable
+
+// you can substitute MyClass constructor argument with
+// any object of class that implements Cacheable
+$myclass = new MyClass( new Transient( 'transient_key', 3600 ) );
+$myclass->inspect_element(); // dumps cached transient variable
+```
+
+See Cacheable interface for all available methods.
+
+## Dice
+
+Dependency injection container. Forked from Tom Butler's Dice lib.
+
+[Dice usage](https://r.je/dice.html)

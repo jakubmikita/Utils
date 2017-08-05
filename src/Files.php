@@ -118,7 +118,7 @@ class Files {
 
 	/**
 	 * Gets url to an asset file
-	 * @param  string $type asset type - js | css
+	 * @param  string $type asset type - js | css | image
 	 * @param  string $file file name
 	 * @return string       asset file url
 	 */
@@ -127,6 +127,35 @@ class Files {
 		$assets_dirs[] = $type;
 		$assets_dirs[] = $file;
 		return $this->file_url( $assets_dirs );
+	}
+
+	/**
+	 * Gets path to an asset file
+	 * @param  string $type asset type - js | css | images
+	 * @param  string $file file name
+	 * @return string       asset file path
+	 */
+	public function asset_path( $type = '', $file = '' ) {
+		$assets_dirs   = $this->assets_dir_name;
+		$assets_dirs[] = $type;
+		$assets_dirs[] = $file;
+		return $this->file_path( $assets_dirs );
+	}
+
+	/**
+	 * Encodes an image to base64
+	 * @param  string $file image file name
+	 * @return string       base64 encoded image
+	 */
+	public function image_base64( $file = '' ) {
+		$path = $this->asset_path( 'images', $file );
+		$type = pathinfo( $path, PATHINFO_EXTENSION );
+		// SVG mime type fix
+		if ( $type == 'svg' ) {
+			$type = 'svg+xml';
+		}
+		$data = file_get_contents( $path );
+		return 'data:image/' . $type . ';base64,' . base64_encode( $data );
 	}
 
 	/**

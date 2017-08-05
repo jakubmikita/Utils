@@ -150,8 +150,12 @@ class Files {
 	public function image_base64( $file = '' ) {
 		$path = $this->asset_path( 'images', $file );
 		$type = pathinfo( $path, PATHINFO_EXTENSION );
+		// SVG mime type fix
+		if ( $type == 'svg' ) {
+			$type = 'svg+xml';
+		}
 		$data = file_get_contents( $path );
-		$base64 = 'data:image/' . $type . ';base64,' . base64_encode( $data );
+		return 'data:image/' . $type . ';base64,' . base64_encode( $data );
 	}
 
 	/**

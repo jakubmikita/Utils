@@ -154,3 +154,9 @@ $myclass->inspect_element(); // dumps cached transient variable
 ```
 
 See Cacheable interface for all available methods.
+
+## Dice
+
+Dependency injection container. Forked from Tom Butler's Dice lib.
+
+[Dice usage](https://r.je/dice.html)

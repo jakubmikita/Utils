@@ -131,7 +131,7 @@ class Files {
 
 	/**
 	 * Gets path to an asset file
-	 * @param  string $type asset type - js | css | image
+	 * @param  string $type asset type - js | css | images
 	 * @param  string $file file name
 	 * @return string       asset file path
 	 */
@@ -140,6 +140,18 @@ class Files {
 		$assets_dirs[] = $type;
 		$assets_dirs[] = $file;
 		return $this->file_path( $assets_dirs );
+	}
+
+	/**
+	 * Encodes an image to base64
+	 * @param  string $file image file name
+	 * @return string       base64 encoded image
+	 */
+	public function image_base64( $file = '' ) {
+		$path = $this->asset_path( 'images', $file );
+		$type = pathinfo( $path, PATHINFO_EXTENSION );
+		$data = file_get_contents( $path );
+		$base64 = 'data:image/' . $type . ';base64,' . base64_encode( $data );
 	}
 
 	/**

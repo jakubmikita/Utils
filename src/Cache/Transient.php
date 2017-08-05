@@ -15,12 +15,6 @@ use underDEV\Utils\Interfaces\Cacheable;
 class Transient extends Cache implements Cacheable {
 
 	/**
-	 * Cache unique key
-	 * @var string
-	 */
-	protected $key;
-
-	/**
 	 * Cache expiration in seconds
 	 * @var integer
 	 */

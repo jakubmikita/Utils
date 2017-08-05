@@ -6,18 +6,13 @@
  */
 
 namespace underDEV\Utils\Cache;
+use underDEV\Utils\Cache\Cache;
 use underDEV\Utils\Interfaces\Cacheable;
 
 /**
  * Object cache
  */
-class Object implements Cacheable {
-
-	/**
-	 * Cache unique key
-	 * @var string
-	 */
-	protected $key;
+class Object extends Cache implements Cacheable {
 
 	/**
 	 * Cache group
@@ -32,11 +27,8 @@ class Object implements Cacheable {
 	 */
 	public function __construct( $key, $group = '' ) {
 
-		if ( empty( $key ) ) {
-			trigger_error( 'Cache key cannot be empty' );
-		}
+		parent::__construct( $key );
 
-		$this->key   = $key;
 		$this->group = $group;
 
 	}

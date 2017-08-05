@@ -6,12 +6,13 @@
  */
 
 namespace underDEV\Utils\Cache;
+use underDEV\Utils\Cache\Cache;
 use underDEV\Utils\Interfaces\Cacheable;
 
 /**
  * Transient cache
  */
-class Transient implements Cacheable {
+class Transient extends Cache implements Cacheable {
 
 	/**
 	 * Cache unique key
@@ -32,11 +33,8 @@ class Transient implements Cacheable {
 	 */
 	public function __construct( $key, $expiration = 0 ) {
 
-		if ( empty( $key ) ) {
-			trigger_error( 'Cache key cannot be empty' );
-		}
+		parent::__construct( $key );
 
-		$this->key        = $key;
 		$this->expiration = $expiration;
 
 	}

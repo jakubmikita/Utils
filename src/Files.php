@@ -118,7 +118,7 @@ class Files {
 
 	/**
 	 * Gets url to an asset file
-	 * @param  string $type asset type - js | css
+	 * @param  string $type asset type - js | css | image
 	 * @param  string $file file name
 	 * @return string       asset file url
 	 */
@@ -127,6 +127,19 @@ class Files {
 		$assets_dirs[] = $type;
 		$assets_dirs[] = $file;
 		return $this->file_url( $assets_dirs );
+	}
+
+	/**
+	 * Gets path to an asset file
+	 * @param  string $type asset type - js | css | image
+	 * @param  string $file file name
+	 * @return string       asset file path
+	 */
+	public function asset_path( $type = '', $file = '' ) {
+		$assets_dirs   = $this->assets_dir_name;
+		$assets_dirs[] = $type;
+		$assets_dirs[] = $file;
+		return $this->file_path( $assets_dirs );
 	}
 
 	/**

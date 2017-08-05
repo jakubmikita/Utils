@@ -100,37 +100,57 @@ Interface for cache. Has two implementations:
 * Object Cache - if WordPress cache is not set it will not persist
 * Transient Cache
 
-```php
-use underDEV\Utils\Cache;
-use underDEV\Utils\Interfaces\Cacheable;
+### Basic usage
 
-// define class which utilises cache
+```php
+use underDEV\Utils\Cache\Object;
+use underDEV\Utils\Cache\Transient;
+
+// create new cache object giving it a key and group
+$cached_object = new Object( 'object_key', 'object_group' );
+var_dump( $cached_object->get() ); // inspect cached value
+
+// create new transient cache giving it a key and expiration in seconds
+$transient_cache = new Transient( 'transient_key', 3600 );
+var_dump( $transient_cache->get() ); // inspect cached value
+```
+
+### Injecting cached element into a class
+
+```php
+use underDEV\Utils\Interfaces\Cacheable;
+use underDEV\Utils\Cache\Object;
+use underDEV\Utils\Cache\Transient;
+
 class MyClass {
 
-	public function __construct( Cacheable $foo, Cacheable $bar ) {
-		$this->foo = $foo;
-		$this->bar = $bar;
+	/**
+	 * Cached object
+	 * @var mixed
+	 */
+	protected $cached_element;
+
+	/**
+	 * Constructor
+	 * @param Cacheable $cached_element
+	 */
+	public function __construct( Cacheable $cached_element ) {
+		$this->cached_element = $cached_element;
 	}
 
-	public function get_foo() {
-		return $this->foo->get();
-	}
-
-	public function get_bar() {
-		return $this->bar->get();
+	public function inspect_element() {
+		var_dump( $this->cached_element->get() );
 	}
 
 }
 
-// create new cache object giving it a key and group
-$cached_object = new Cache\Object( 'object_key', 'object_group' );
+$myclass = new MyClass( new Object( 'object_key', 'object_group' ) );
+$myclass->inspect_element(); // dumps object cached variable
 
-// create new transient cache giving it a key and expiration in seconds
-$transient_cache = new Cache\Transient( 'transient_key', 3600 );
-
-$my_class = new MyClass( $cached_object, $transient_cache );
-echo $my_class->get_foo();
-echo $my_class->get_bar();
+// you can substitute MyClass constructor argument with
+// any object of class that implements Cacheable
+$myclass = new MyClass( new Transient( 'transient_key', 3600 ) );
+$myclass->inspect_element(); // dumps cached transient variable
 ```
 
 See Cacheable interface for all available methods.

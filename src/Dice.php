@@ -8,6 +8,9 @@
  *
  * @author Dawid Urbański <hi@dawidurbanski.com>
  *         Made a fork compatible with WordPress coding standards
+ *
+ * @author Kuba Mikita <jakub@underdev.it>
+ *         Made a fork compatible with PHP 5.3
  */
 
 namespace underDEV\Utils;
@@ -16,17 +19,17 @@ class Dice {
 	/**
 	 * @var array $rules Rules which have been set using addRule()
 	 */
-	private $rules = [];
+	private $rules = array();
 
 	/**
 	 * @var array $cache A cache of closures based on class name so each class is only reflected once
 	 */
-	private $cache = [];
+	private $cache = array();
 
 	/**
 	 * @var array $instances Stores any instances marked as 'shared' so create() can return the same instance
 	 */
-	private $instances = [];
+	private $instances = array();
 
 	/**
 	 * Add a rule $rule to the class $name
@@ -62,7 +65,7 @@ class Dice {
 			}
 		}
 		// No rule has matched, return the default rule if it's set
-		return isset( $this->rules['*'] ) ? $this->rules['*'] : [];
+		return isset( $this->rules['*'] ) ? $this->rules['*'] : array();
 	}
 
 	/**
@@ -73,7 +76,7 @@ class Dice {
 	 * @param array                                            $share Whether or not this class instance be shared, so that the same instance is passed around each time
 	 * @return object A fully constructed object based on the specified input arguments
 	 */
-	public function create( $name, array $args = [], array $share = [] ) {
+	public function create( $name, array $args = array(), array $share = array() ) {
 		// Is there a shared instance set? Return it. Better here than a closure for this, calling a closure is slower.
 		if ( ! empty( $this->instances[ $name ] ) ) {
 			return $this->instances[ $name ];
@@ -120,7 +123,7 @@ class Dice {
 		elseif ( $params ) {
 			$closure = function ( array $args, array $share ) use ( $class, $params ) {
 				// This class has depenencies, call the $params closure to generate them based on $args and $share
-				return new $class->name( ...$params($args, $share) );
+				return $class->newInstanceArgs( $params($args, $share) );
 			};
 		}
 		else {
@@ -132,7 +135,7 @@ class Dice {
 		// If there are shared instances, create them and merge them with shared instances higher up the object graph
 		if ( isset( $rule['shareInstances'] ) ) {
 			$closure = function( array $args, array $share ) use ( $closure, $rule ) {
-				return $closure($args, array_merge( $args, $share, array_map( [ $this, 'create' ], $rule['shareInstances'] ) ));
+				return $closure($args, array_merge( $args, $share, array_map( array( $this, 'create' ), $rule['shareInstances'] ) ));
 			};
 		}
 		// When $rule['call'] is set, wrap the closure in another closure which will call the required methods after constructing the object
@@ -143,10 +146,10 @@ class Dice {
 
 			foreach ( $rule['call'] as $call ) {
 				// Generate the method arguments using getParams() and call the returned closure (in php7 will be ()() rather than __invoke)
-				$params = $this->getParams( $class->getMethod( $call[0] ), [
-					'shareInstances' => isset( $rule['shareInstances'] ) ? $rule['shareInstances'] : [],
-				] )->__invoke( $this->expand( isset( $call[1] ) ? $call[1] : [] ) );
-				$return = $object->{$call[0]}(...$params);
+				$params = $this->getParams( $class->getMethod( $call[0] ), array(
+					'shareInstances' => isset( $rule['shareInstances'] ) ? $rule['shareInstances'] : array(),
+				) )->__invoke( $this->expand( isset( $call[1] ) ? $call[1] : array() ) );
+				$return = call_user_func_array( array( $object, $call[0] ), $params );
 				if ( isset( $call[2] ) && is_callable( $call[2] ) ) {
 					call_user_func( $call[2], $return );
 				}
@@ -163,18 +166,18 @@ class Dice {
 	 * @param bool  $createFromString
 	 * @return mixed
 	 */
-	private function expand( $param, array $share = [], $createFromString = false ) {
+	private function expand( $param, array $share = array(), $createFromString = false ) {
 		if ( is_array( $param ) && isset( $param['instance'] ) ) {
 			// Call or return the value sored under the key 'instance'
 			// For ['instance' => ['className', 'methodName'] construct the instance before calling it
-			$args = isset( $param['params'] ) ? $this->expand( $param['params'] ) : [];
+			$args = isset( $param['params'] ) ? $this->expand( $param['params'] ) : array();
 
 			if ( is_array( $param['instance'] ) ) {
 				$param['instance'][0] = $this->expand( $param['instance'][0], $share, true );
 			}
 
 			if ( is_callable( $param['instance'] ) ) {
-				return call_user_func( $param['instance'], ...$args );
+				return call_user_func_array( $param['instance'], $args );
 			} else {
 				return $this->create( $param['instance'], array_merge( $args, $share ) );
 			}
@@ -197,29 +200,31 @@ class Dice {
 	 */
 	private function getParams( \ReflectionMethod $method, array $rule ) {
 		// Cache some information about the parameter in $paramInfo so (slow) reflection isn't needed every time
-		$paramInfo = [];
+		$paramInfo = array();
 		foreach ( $method->getParameters() as $param ) {
 			$class = $param->getClass() ? $param->getClass()->name : null;
-			$paramInfo[] = [ $class, $param, isset( $rule['substitutions'] ) && array_key_exists( $class, $rule['substitutions'] ) ];
+			$paramInfo[] = array( $class, $param, isset( $rule['substitutions'] ) && array_key_exists( $class, $rule['substitutions'] ) );
 		}
 
 		// Return a closure that uses the cached information to generate the arguments for the method
-		return function ( array $args, array $share = [] ) use ( $paramInfo, $rule ) {
+		return function ( array $args, array $share = array() ) use ( $paramInfo, $rule ) {
 			// Now merge all the possible parameters: user-defined in the rule via constructParams, shared instances and the $args argument from $dice->create();
 			if ( $share || isset( $rule['constructParams'] ) ) {
-				$args = array_merge( $args, isset( $rule['constructParams'] ) ? $this->expand( $rule['constructParams'], $share ) : [], $share );
+				$args = array_merge( $args, isset( $rule['constructParams'] ) ? $this->expand( $rule['constructParams'], $share ) : array(), $share );
 			}
 
-			$parameters = [];
+			$parameters = array();
 
 			// Now find a value for each method parameter
-			foreach ( $paramInfo as list($class, $param, $sub) ) {
+			foreach ( $paramInfo as $paramInfoTmp ) {
+				list($class, $param, $sub) = $paramInfoTmp;
 				// First loop through $args and see whether or not each value can match the current parameter based on type hint
 				if ( $args ) {
 					foreach ( $args as $i => $arg ) { // This if statement actually gives a ~10% speed increase when $args isn't set
 						if ( $class && ($arg instanceof $class || ($arg === null && $param->allowsNull())) ) {
 							// The argument matched, store it and remove it from $args so it won't wrongly match another parameter
-							$parameters[] = array_splice( $args, $i, 1 )[0];
+							$pTmp = array_splice( $args, $i, 1 );
+							$parameters[] = $pTmp[0];
 							// Move on to the next parameter
 							continue 2;
 						}
@@ -227,7 +232,7 @@ class Dice {
 				}
 				// When nothing from $args matches but a class is type hinted, create an instance to use, using a substitution if set
 				if ( $class ) {
-					$parameters[] = $sub ? $this->expand( $rule['substitutions'][ $class ], $share, true ) : $this->create( $class, [], $share );
+					$parameters[] = $sub ? $this->expand( $rule['substitutions'][ $class ], $share, true ) : $this->create( $class, array(), $share );
 				} // End if().
 				elseif ( $param->isVariadic() ) {
 					$parameters = array_merge( $parameters, $args );

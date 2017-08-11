@@ -157,6 +157,6 @@ See Cacheable interface for all available methods.
 
 ## Dice
 
-Dependency injection container. Forked from Tom Butler's Dice lib.
+Dependency injection container. Forked from Tom Butler's Dice lib. Compatible with PHP 5.3
 
 [Dice usage](https://r.je/dice.html)

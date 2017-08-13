@@ -234,9 +234,9 @@ class Dice {
 				if ( $class ) {
 					$parameters[] = $sub ? $this->expand( $rule['substitutions'][ $class ], $share, true ) : $this->create( $class, array(), $share );
 				} // End if().
-				elseif ( $param->isVariadic() ) {
+				/*elseif ( $param->isVariadic() ) {
 					$parameters = array_merge( $parameters, $args );
-				} // There is no type hint, take the next available value from $args (and remove it from $args to stop it being reused)
+				}*/ // There is no type hint, take the next available value from $args (and remove it from $args to stop it being reused)
 				elseif ( $args ) {
 					$parameters[] = $this->expand( array_shift( $args ) );
 				} // There's no type hint and nothing left in $args, provide the default value or null

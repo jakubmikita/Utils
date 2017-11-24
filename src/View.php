@@ -138,18 +138,18 @@ class View {
 
 		// try to locate the template in theme
 		if ( $this->locate_template ) {
-
-			if ( locate_template( $this->locate_template . '/' . $part . '.php', true, false ) != '' ) {
-				return $this;
-			}
-
+			$file_path = locate_template( $this->locate_template . '/' . $part . '.php', false, false );
 		}
 
 		// template not located, load from the plugin
-		$file_path = $this->files->file_path( array(
-			$this->views_dir,
-			$part . '.php'
-		) );
+		if ( $file_path == '' ) {
+
+			$file_path = $this->files->file_path( array(
+				$this->views_dir,
+				$part . '.php'
+			) );
+
+		}
 
 		include( $file_path );
 

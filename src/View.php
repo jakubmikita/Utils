@@ -27,13 +27,22 @@ class View {
 	private $vars = array();
 
 	/**
+	 * Locate template
+	 * If this is a string the templates will be loaded
+	 * from this dir in theme first
+	 * @var boolean
+	 */
+	private $locate_template;
+
+	/**
 	 * Class constructor
 	 * @param Files $files Utils\Files instance
 	 */
-	public function __construct( Files $files ) {
+	public function __construct( Files $files, $views_dir = 'views', $locate_template = false ) {
 
-		$this->files = $files;
-		$this->views_dir = 'views';
+		$this->files           = $files;
+		$this->views_dir       = $views_dir;
+		$this->locate_template = $locate_template;
 
 	}
 
@@ -127,6 +136,16 @@ class View {
 	 */
 	public function get_view( $part ) {
 
+		// try to locate the template in theme
+		if ( $this->locate_template ) {
+
+			if ( locate_template( $this->locate_template . '/' . $template . '.php', true, false ) != '' ) {
+				return $this;
+			}
+
+		}
+
+		// template not located, load from the plugin
 		$file_path = $this->files->file_path( array(
 			$this->views_dir,
 			$part . '.php'

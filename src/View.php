@@ -139,7 +139,7 @@ class View {
 		// try to locate the template in theme
 		if ( $this->locate_template ) {
 
-			if ( locate_template( $this->locate_template . '/' . $template . '.php', true, false ) != '' ) {
+			if ( locate_template( $this->locate_template . '/' . $part . '.php', true, false ) != '' ) {
 				return $this;
 			}
 

@@ -136,6 +136,19 @@ class View {
 	 */
 	public function get_view( $part ) {
 
+		include( $this->get_view_path( $part ) );
+
+		return $this;
+
+	}
+
+	/**
+	 * Gets view file full path
+	 * @param  string $part file with
+	 * @return string
+	 */
+	public function get_view_path( $part ) {
+
 		// try to locate the template in theme
 		if ( $this->locate_template ) {
 			$file_path = locate_template( $this->locate_template . '/' . $part . '.php', false, false );
@@ -151,9 +164,7 @@ class View {
 
 		}
 
-		include( $file_path );
-
-		return $this;
+		return $file_path;
 
 	}
 

@@ -152,6 +152,8 @@ class View {
 		// try to locate the template in theme
 		if ( $this->locate_template ) {
 			$file_path = locate_template( $this->locate_template . '/' . $part . '.php', false, false );
+		} else {
+			$file_path = '';
 		}
 
 		// template not located, load from the plugin

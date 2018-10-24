@@ -103,11 +103,11 @@ Interface for cache. Has two implementations:
 ### Basic usage
 
 ```php
-use underDEV\Utils\Cache\Object;
+use underDEV\Utils\Cache\ObjectCache;
 use underDEV\Utils\Cache\Transient;
 
 // create new cache object giving it a key and group
-$cached_object = new Object( 'object_key', 'object_group' );
+$cached_object = new ObjectCache( 'object_key', 'object_group' );
 var_dump( $cached_object->get() ); // inspect cached value
 
 // create new transient cache giving it a key and expiration in seconds
@@ -119,7 +119,7 @@ var_dump( $transient_cache->get() ); // inspect cached value
 
 ```php
 use underDEV\Utils\Interfaces\Cacheable;
-use underDEV\Utils\Cache\Object;
+use underDEV\Utils\Cache\ObjectCache;
 use underDEV\Utils\Cache\Transient;
 
 class MyClass {
@@ -144,7 +144,7 @@ class MyClass {
 
 }
 
-$myclass = new MyClass( new Object( 'object_key', 'object_group' ) );
+$myclass = new MyClass( new ObjectCache( 'object_key', 'object_group' ) );
 $myclass->inspect_element(); // dumps object cached variable
 
 // you can substitute MyClass constructor argument with

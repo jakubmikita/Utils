@@ -22,11 +22,12 @@ class Files {
 
 	/**
 	 * Class constructor
-	 * @param string $plugin_file full path to main plugin file
+	 * @param string $plugin_file       full path to main plugin file
+	 * @param array  $assets_dist_parts dist dir parts
 	 */
-	public function __construct( $plugin_file = '' ) {
+	public function __construct( $plugin_file = '', $assets_dist_parts = array( 'assets', 'dist' ) ) {
 		$this->plugin_file     = $plugin_file;
-		$this->assets_dir_name = array( 'assets', 'dist' );
+		$this->assets_dir_name =  $assets_dist_parts;
 	}
 
 	/**
